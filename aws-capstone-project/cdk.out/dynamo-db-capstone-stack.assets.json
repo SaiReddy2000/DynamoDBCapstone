@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "6b3d20fe0dc33f39984f338a16a6d17b711ce6bf4735ed695340a4f1a69c144f": {
+      "source": {
+        "path": "dynamo-db-capstone-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6b3d20fe0dc33f39984f338a16a6d17b711ce6bf4735ed695340a4f1a69c144f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

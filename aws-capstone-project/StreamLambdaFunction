@@ -1,0 +1,35 @@
+# Stream Processor Lambda Function
+import json
+
+def lambda_handler(event, context):
+    for record in event['Records']:
+        if record['eventName'] == 'INSERT':
+            # Process The Inserted Record
+            handle_insert(record)
+        elif record['eventName'] == 'MODIFY':
+            # Process The Modified Record
+            handle_modify(record)
+        elif record['eventName'] == 'REMOVE':
+            # Process The Removed Record
+            handle_remove(record)
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Stream Processing Completed')
+    }
+
+def handle_insert(record):
+    new_image = record['dynamodb']['NewImage']
+    # Process The Inserted Item
+    print("Inserted Item:", new_image)
+
+def handle_modify(record):
+    new_image = record['dynamodb']['NewImage']
+    old_image = record['dynamodb']['OldImage']
+    # Process The Modified Item
+    print("New Image:", new_image)
+    print("Old Image:", old_image)
+
+def handle_remove(record):
+    old_image = record['dynamodb']['OldImage']
+    # Process The Removed Item
+    print("Removed Item:", old_image)

@@ -1,0 +1,1151 @@
+{
+ "Resources": {
+  "DynamoDBTable59784FC0": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    },
+    "StreamSpecification": {
+     "StreamViewType": "NEW_AND_OLD_IMAGES"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/DynamoDBTable/Resource"
+   }
+  },
+  "CrudLambdaFunctionServiceRoleB6CA2091": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/CrudLambdaFunction/ServiceRole/Resource"
+   }
+  },
+  "CrudLambdaFunctionServiceRoleDefaultPolicy8938D7E9": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DynamoDBTable59784FC0",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CrudLambdaFunctionServiceRoleDefaultPolicy8938D7E9",
+    "Roles": [
+     {
+      "Ref": "CrudLambdaFunctionServiceRoleB6CA2091"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/CrudLambdaFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "CrudLambdaFunctionC2A29CD8": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "deployment-bucket",
+     "S3Key": "lambda/deployment/lambda-dynamodb.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "DYNAMODB_TABLE_NAME": {
+       "Ref": "DynamoDBTable59784FC0"
+      }
+     }
+    },
+    "Handler": "lambda.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CrudLambdaFunctionServiceRoleB6CA2091",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "CrudLambdaFunctionServiceRoleDefaultPolicy8938D7E9",
+    "CrudLambdaFunctionServiceRoleB6CA2091"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/CrudLambdaFunction/Resource"
+   }
+  },
+  "StreamLambdaFunctionServiceRoleF431F4B8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/StreamLambdaFunction/ServiceRole/Resource"
+   }
+  },
+  "StreamLambdaFunctionServiceRoleDefaultPolicy6F0D1855": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "dynamodb:ListStreams",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "dynamodb:DescribeStream",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "DynamoDBTable59784FC0",
+         "StreamArn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StreamLambdaFunctionServiceRoleDefaultPolicy6F0D1855",
+    "Roles": [
+     {
+      "Ref": "StreamLambdaFunctionServiceRoleF431F4B8"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/StreamLambdaFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "StreamLambdaFunction091DF47C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "deployment-bucket",
+     "S3Key": "lambda/deployment/dynamodb-lambda.zip"
+    },
+    "Handler": "lambda.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamLambdaFunctionServiceRoleF431F4B8",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "StreamLambdaFunctionServiceRoleDefaultPolicy6F0D1855",
+    "StreamLambdaFunctionServiceRoleF431F4B8"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/StreamLambdaFunction/Resource"
+   }
+  },
+  "StreamLambdaFunctionDynamoDBEventSourcedynamodbcapstonestackDynamoDBTableDED75C6AFCDD34CE": {
+   "Type": "AWS::Lambda::EventSourceMapping",
+   "Properties": {
+    "BatchSize": 10,
+    "EventSourceArn": {
+     "Fn::GetAtt": [
+      "DynamoDBTable59784FC0",
+      "StreamArn"
+     ]
+    },
+    "FunctionName": {
+     "Ref": "StreamLambdaFunction091DF47C"
+    },
+    "StartingPosition": "LATEST"
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/StreamLambdaFunction/DynamoDBEventSource:dynamodbcapstonestackDynamoDBTableDED75C6A/Resource"
+   }
+  },
+  "RestAPI1CC12F26": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "RestAPI"
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Resource"
+   }
+  },
+  "RestAPICloudWatchRole025FE33D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/CloudWatchRole/Resource"
+   }
+  },
+  "RestAPIAccountB5481627": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "RestAPICloudWatchRole025FE33D",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "RestAPI1CC12F26"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Account"
+   }
+  },
+  "RestAPIDeploymentD35A5380e57b7f035ab2750cec8035513f56d49c": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "RestAPI1CC12F26"
+    }
+   },
+   "DependsOn": [
+    "RestAPIcrudidDELETE2ED2A226",
+    "RestAPIcrudidGETA5B005A6",
+    "RestAPIcrudidPUT67B5AAF8",
+    "RestAPIcrudidBA3C827F",
+    "RestAPIcrudPOSTA08F9F67",
+    "RestAPIcrudA7BC0089"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Deployment/Resource"
+   }
+  },
+  "RestAPIDeploymentStageprod21CF62B9": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "RestAPIDeploymentD35A5380e57b7f035ab2750cec8035513f56d49c"
+    },
+    "RestApiId": {
+     "Ref": "RestAPI1CC12F26"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "RestAPIAccountB5481627"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/DeploymentStage.prod/Resource"
+   }
+  },
+  "RestAPIcrudA7BC0089": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RestAPI1CC12F26",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "crud",
+    "RestApiId": {
+     "Ref": "RestAPI1CC12F26"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/Resource"
+   }
+  },
+  "RestAPIcrudPOSTApiPermissiondynamodbcapstonestackRestAPI4FA0D8F2POSTcrud99EC3AEB": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CrudLambdaFunctionC2A29CD8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "RestAPI1CC12F26"
+       },
+       "/",
+       {
+        "Ref": "RestAPIDeploymentStageprod21CF62B9"
+       },
+       "/POST/crud"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/POST/ApiPermission.dynamodbcapstonestackRestAPI4FA0D8F2.POST..crud"
+   }
+  },
+  "RestAPIcrudPOSTApiPermissionTestdynamodbcapstonestackRestAPI4FA0D8F2POSTcrud02D87C95": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CrudLambdaFunctionC2A29CD8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "RestAPI1CC12F26"
+       },
+       "/test-invoke-stage/POST/crud"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/POST/ApiPermission.Test.dynamodbcapstonestackRestAPI4FA0D8F2.POST..crud"
+   }
+  },
+  "RestAPIcrudPOSTA08F9F67": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "CrudLambdaFunctionC2A29CD8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "RestAPIcrudA7BC0089"
+    },
+    "RestApiId": {
+     "Ref": "RestAPI1CC12F26"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/POST/Resource"
+   }
+  },
+  "RestAPIcrudidBA3C827F": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "RestAPIcrudA7BC0089"
+    },
+    "PathPart": "{id}",
+    "RestApiId": {
+     "Ref": "RestAPI1CC12F26"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/Resource"
+   }
+  },
+  "RestAPIcrudidGETApiPermissiondynamodbcapstonestackRestAPI4FA0D8F2GETcrudidB1B05D98": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CrudLambdaFunctionC2A29CD8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "RestAPI1CC12F26"
+       },
+       "/",
+       {
+        "Ref": "RestAPIDeploymentStageprod21CF62B9"
+       },
+       "/GET/crud/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/GET/ApiPermission.dynamodbcapstonestackRestAPI4FA0D8F2.GET..crud.{id}"
+   }
+  },
+  "RestAPIcrudidGETApiPermissionTestdynamodbcapstonestackRestAPI4FA0D8F2GETcrudid8497D734": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CrudLambdaFunctionC2A29CD8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "RestAPI1CC12F26"
+       },
+       "/test-invoke-stage/GET/crud/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/GET/ApiPermission.Test.dynamodbcapstonestackRestAPI4FA0D8F2.GET..crud.{id}"
+   }
+  },
+  "RestAPIcrudidGETA5B005A6": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "CrudLambdaFunctionC2A29CD8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "RestAPIcrudidBA3C827F"
+    },
+    "RestApiId": {
+     "Ref": "RestAPI1CC12F26"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/GET/Resource"
+   }
+  },
+  "RestAPIcrudidPUTApiPermissiondynamodbcapstonestackRestAPI4FA0D8F2PUTcrudid3EF66748": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CrudLambdaFunctionC2A29CD8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "RestAPI1CC12F26"
+       },
+       "/",
+       {
+        "Ref": "RestAPIDeploymentStageprod21CF62B9"
+       },
+       "/PUT/crud/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/PUT/ApiPermission.dynamodbcapstonestackRestAPI4FA0D8F2.PUT..crud.{id}"
+   }
+  },
+  "RestAPIcrudidPUTApiPermissionTestdynamodbcapstonestackRestAPI4FA0D8F2PUTcrudidC77216A6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CrudLambdaFunctionC2A29CD8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "RestAPI1CC12F26"
+       },
+       "/test-invoke-stage/PUT/crud/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/PUT/ApiPermission.Test.dynamodbcapstonestackRestAPI4FA0D8F2.PUT..crud.{id}"
+   }
+  },
+  "RestAPIcrudidPUT67B5AAF8": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "PUT",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "CrudLambdaFunctionC2A29CD8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "RestAPIcrudidBA3C827F"
+    },
+    "RestApiId": {
+     "Ref": "RestAPI1CC12F26"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/PUT/Resource"
+   }
+  },
+  "RestAPIcrudidDELETEApiPermissiondynamodbcapstonestackRestAPI4FA0D8F2DELETEcrudid418DA64F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CrudLambdaFunctionC2A29CD8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "RestAPI1CC12F26"
+       },
+       "/",
+       {
+        "Ref": "RestAPIDeploymentStageprod21CF62B9"
+       },
+       "/DELETE/crud/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/DELETE/ApiPermission.dynamodbcapstonestackRestAPI4FA0D8F2.DELETE..crud.{id}"
+   }
+  },
+  "RestAPIcrudidDELETEApiPermissionTestdynamodbcapstonestackRestAPI4FA0D8F2DELETEcrudid0D36613C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CrudLambdaFunctionC2A29CD8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "RestAPI1CC12F26"
+       },
+       "/test-invoke-stage/DELETE/crud/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/DELETE/ApiPermission.Test.dynamodbcapstonestackRestAPI4FA0D8F2.DELETE..crud.{id}"
+   }
+  },
+  "RestAPIcrudidDELETE2ED2A226": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "DELETE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "CrudLambdaFunctionC2A29CD8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "RestAPIcrudidBA3C827F"
+    },
+    "RestApiId": {
+     "Ref": "RestAPI1CC12F26"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/DELETE/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/22PTU/DMAyGf8vuWWjhANetwAFpYmq5IzfxOtMmqRpnVRX1v6OmfE3i5MevX3/dyjx/kNkGRr9Vut12VMtYMahWwOjfo54sGKdrGd+g7lAUJ5tgFv5O7oNqkffgUXRgag0yPgermJxdjD/8dEHLlQuDwgP0PdlmKf+vHnEw5D05OwsCI2Pp1rUpHl1Hakq+RLOAnhpgHGGSsUTPu56S+xd3SrlgWTxi37nJoOVF/ZNVDE1asUKJPh2V/vpOvmaufEA+O71IK83zle81cB/4qqM42cJZTZz+eoEL3OT3MpN5tvnwRNshWCaDslzjJz2XtqiWAQAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "dynamo-db-capstone-stack/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "RestAPIEndpointB14C3C54": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "RestAPI1CC12F26"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "RestAPIDeploymentStageprod21CF62B9"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-2"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

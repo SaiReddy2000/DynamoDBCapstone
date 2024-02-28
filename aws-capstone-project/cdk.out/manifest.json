@@ -1,0 +1,227 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "dynamo-db-capstone-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "dynamo-db-capstone-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "dynamo-db-capstone-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "dynamo-db-capstone-stack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6b3d20fe0dc33f39984f338a16a6d17b711ce6bf4735ed695340a4f1a69c144f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "dynamo-db-capstone-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "dynamo-db-capstone-stack.assets"
+      ],
+      "metadata": {
+        "/dynamo-db-capstone-stack/DynamoDBTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DynamoDBTable59784FC0"
+          }
+        ],
+        "/dynamo-db-capstone-stack/CrudLambdaFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrudLambdaFunctionServiceRoleB6CA2091"
+          }
+        ],
+        "/dynamo-db-capstone-stack/CrudLambdaFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrudLambdaFunctionServiceRoleDefaultPolicy8938D7E9"
+          }
+        ],
+        "/dynamo-db-capstone-stack/CrudLambdaFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrudLambdaFunctionC2A29CD8"
+          }
+        ],
+        "/dynamo-db-capstone-stack/StreamLambdaFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamLambdaFunctionServiceRoleF431F4B8"
+          }
+        ],
+        "/dynamo-db-capstone-stack/StreamLambdaFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamLambdaFunctionServiceRoleDefaultPolicy6F0D1855"
+          }
+        ],
+        "/dynamo-db-capstone-stack/StreamLambdaFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamLambdaFunction091DF47C"
+          }
+        ],
+        "/dynamo-db-capstone-stack/StreamLambdaFunction/DynamoDBEventSource:dynamodbcapstonestackDynamoDBTableDED75C6A/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamLambdaFunctionDynamoDBEventSourcedynamodbcapstonestackDynamoDBTableDED75C6AFCDD34CE"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPI1CC12F26"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPICloudWatchRole025FE33D"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIAccountB5481627"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIDeploymentD35A5380e57b7f035ab2750cec8035513f56d49c"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIDeploymentStageprod21CF62B9"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIEndpointB14C3C54"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudA7BC0089"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/POST/ApiPermission.dynamodbcapstonestackRestAPI4FA0D8F2.POST..crud": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudPOSTApiPermissiondynamodbcapstonestackRestAPI4FA0D8F2POSTcrud99EC3AEB"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/POST/ApiPermission.Test.dynamodbcapstonestackRestAPI4FA0D8F2.POST..crud": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudPOSTApiPermissionTestdynamodbcapstonestackRestAPI4FA0D8F2POSTcrud02D87C95"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudPOSTA08F9F67"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudidBA3C827F"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/GET/ApiPermission.dynamodbcapstonestackRestAPI4FA0D8F2.GET..crud.{id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudidGETApiPermissiondynamodbcapstonestackRestAPI4FA0D8F2GETcrudidB1B05D98"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/GET/ApiPermission.Test.dynamodbcapstonestackRestAPI4FA0D8F2.GET..crud.{id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudidGETApiPermissionTestdynamodbcapstonestackRestAPI4FA0D8F2GETcrudid8497D734"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudidGETA5B005A6"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/PUT/ApiPermission.dynamodbcapstonestackRestAPI4FA0D8F2.PUT..crud.{id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudidPUTApiPermissiondynamodbcapstonestackRestAPI4FA0D8F2PUTcrudid3EF66748"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/PUT/ApiPermission.Test.dynamodbcapstonestackRestAPI4FA0D8F2.PUT..crud.{id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudidPUTApiPermissionTestdynamodbcapstonestackRestAPI4FA0D8F2PUTcrudidC77216A6"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/PUT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudidPUT67B5AAF8"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/DELETE/ApiPermission.dynamodbcapstonestackRestAPI4FA0D8F2.DELETE..crud.{id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudidDELETEApiPermissiondynamodbcapstonestackRestAPI4FA0D8F2DELETEcrudid418DA64F"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/DELETE/ApiPermission.Test.dynamodbcapstonestackRestAPI4FA0D8F2.DELETE..crud.{id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudidDELETEApiPermissionTestdynamodbcapstonestackRestAPI4FA0D8F2DELETEcrudid0D36613C"
+          }
+        ],
+        "/dynamo-db-capstone-stack/RestAPI/Default/crud/{id}/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestAPIcrudidDELETE2ED2A226"
+          }
+        ],
+        "/dynamo-db-capstone-stack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/dynamo-db-capstone-stack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ]
+      },
+      "displayName": "dynamo-db-capstone-stack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
